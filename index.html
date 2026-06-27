@@ -432,7 +432,7 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
 .add-form{background:var(--bg2);border-radius:12px;padding:16px;margin-bottom:16px;}
 .status-badge{font-size:11px;font-weight:600;padding:3px 10px;border-radius:20px;}
 .reco-layout{max-width:1100px;margin:0 auto;padding:32px 24px;}
-.reco-search{display:grid;grid-template-columns:1fr 120px auto;gap:10px;align-items:end;}
+.reco-search{display:grid;grid-template-columns:1fr 140px auto;gap:10px;align-items:end;}
 .tab-row{display:flex;gap:8px;margin:20px 0;}
 .tab{display:flex;align-items:center;gap:6px;padding:8px 18px;border-radius:10px;font-size:13px;font-weight:500;cursor:pointer;transition:var(--transition);border:1px solid var(--border);background:var(--card);color:var(--text-muted);}
 .tab.active{background:var(--navy);color:white;border-color:var(--navy);}
@@ -1537,7 +1537,7 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
   <div class="page-header"><h1 class="page-h1">Discover</h1><p class="page-sub-text">AI-curated picks for your destination and budget</p></div>
   <div class="reco-layout">
     <div class="card mb-4">
-      <div class="reco-search" style="grid-template-columns:1fr auto;"><div><label>Destination</label><input type="text" id="reco-dest" placeholder="e.g. Bangkok, Thailand" onkeydown="if(event.key==='Enter')fetchRecoCategory()"></div><div><label>&nbsp;</label><button class="btn btn-navy" id="reco-btn" onclick="fetchRecoCategory()" style="width:100%"><span id="reco-btn-txt">🔍 Search</span></button></div></div>
+      <div class="reco-search" style="grid-template-columns:1fr 140px auto;gap:10px;"><div><label>Destination</label><input type="text" id="reco-dest" placeholder="e.g. Bangkok, Thailand" onkeydown="if(event.key==='Enter')fetchRecoCategory()"></div><div><label>Budget (₹)</label><input type="number" id="reco-budget-input" min="0" placeholder="Budget (₹)" oninput="if(this.value<0)this.value=''" style="width:100%;padding:10px 12px;border-radius:var(--radius-sm);border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:14px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'" onkeydown="if(event.key==='Enter')fetchRecoCategory()"></div><div><label>&nbsp;</label><button class="btn btn-navy" id="reco-btn" onclick="fetchRecoCategory()" style="width:100%"><span id="reco-btn-txt">🔍 Search</span></button></div></div>
       <!-- hidden budget kept for any legacy code -->
       <input type="number" id="reco-budget" value="1500" style="display:none">
       <!-- Category icon selectors -->
@@ -1556,12 +1556,7 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
         </button>
       </div>
     </div>
-    <div class="tab-row" id="reco-tabs" style="display:none">
-      <button class="tab active" data-tab="hotels" onclick="switchTab(this,'hotels')">🏨 Hotels <span id="tab-count-hotels" class="reco-tag" style="margin-left:4px">0</span></button>
-      <button class="tab" data-tab="restaurants" onclick="switchTab(this,'restaurants')">🍽️ Restaurants <span id="tab-count-restaurants" class="reco-tag" style="margin-left:4px">0</span></button>
-      <button class="tab" data-tab="airlines" onclick="switchTab(this,'airlines')">✈️ Airlines <span id="tab-count-airlines" class="reco-tag" style="margin-left:4px">0</span></button>
-      <button class="tab" data-tab="trains" onclick="switchTab(this,'trains')">🚂 Trains <span id="tab-count-trains" class="reco-tag" style="margin-left:4px">0</span></button>
-    </div>
+    <div id="reco-tabs" style="display:none"></div>
     <div id="reco-content"><div class="empty-state"><div class="empty-icon">🔍</div><div class="empty-title">Find your perfect stay, meal & flight</div><div class="empty-desc">Enter a destination and let AI recommend the best options for your budget.</div></div></div>
   </div>
 </div>
@@ -4023,6 +4018,7 @@ window.recoSelectCat = function(btn, cat){
   btn.style.borderColor = 'var(--accent)';
   btn.style.background = 'rgba(79,142,247,0.1)';
   state.activeRecoTab = cat;
+  if(state.recoData && state.recoData[cat]) renderRecos();
 };
 
 window.fetchRecoCategory = async function(){
@@ -4060,13 +4056,13 @@ window.fetchRecoCategory = async function(){
 };
 
 async function fetchRecos(){
-  const dest=document.getElementById('reco-dest').value.trim(),budget=parseFloat(document.getElementById('reco-budget').value)||1500,cur=state.currency;
+  const dest=document.getElementById('reco-dest').value.trim(),budget=parseFloat(document.getElementById('reco-budget-input').value)||parseFloat(document.getElementById('reco-budget').value)||1500,cur=state.currency;
   if(!dest){toast('Enter a destination','error');return;}
   const btn=document.getElementById('reco-btn'),txt=document.getElementById('reco-btn-txt');
   btn.disabled=true;txt.innerHTML='<span class="spinner"></span>';
   document.getElementById('reco-content').innerHTML='<div class="loading-banner"><div class="spinner"></div><span>Finding best options…</span></div>';
   document.getElementById('reco-tabs').style.display='none';
-  try{const raw=await callGemini(`You are a travel recommendation engine. Give travel recommendations for ${dest} with budget ${cur} ${budget} per person.\nReturn ONLY valid JSON with NO extra text:\n{"hotels":[{"name":"","description":"","pricePerNight":number,"rating":number,"tags":["tag1"],"tip":""}],"restaurants":[{"name":"","description":"","pricePerPerson":number,"rating":number,"cuisine":"","tags":["tag1"],"tip":""}],"airlines":[{"name":"","route":"","price":number,"duration":"","tags":["tag1"],"tip":""}],"trains":[{"name":"","route":"","price":number,"duration":"","tags":["tag1"],"tip":""}]}\nInclude 4-5 items per category. For trains include regional/intercity rail options. Prices must be realistic numbers in ${cur}.`);state.recoData=parseJSON(raw);state.activeRecoTab='hotels';document.getElementById('reco-tabs').style.display='flex';['hotels','restaurants','airlines','trains'].forEach(t=>{document.getElementById('tab-count-'+t).textContent=(state.recoData[t]?.length||0);});renderRecos();toast(`✨ Found recommendations for ${dest}!`);}
+  try{const raw=await callGemini(`You are a travel recommendation engine. Give travel recommendations for ${dest} with budget ${cur} ${budget} per person.\nReturn ONLY valid JSON with NO extra text:\n{"hotels":[{"name":"","description":"","pricePerNight":number,"rating":number,"tags":["tag1"],"tip":""}],"restaurants":[{"name":"","description":"","pricePerPerson":number,"rating":number,"cuisine":"","tags":["tag1"],"tip":""}],"airlines":[{"name":"","route":"","price":number,"duration":"","tags":["tag1"],"tip":""}],"trains":[{"name":"","route":"","price":number,"duration":"","tags":["tag1"],"tip":""}]}\nInclude 4-5 items per category. For trains include regional/intercity rail options. Prices must be realistic numbers in ${cur}.`);state.recoData=parseJSON(raw);state.activeRecoTab='hotels';document.getElementById('reco-tabs').style.display='flex';['hotels','restaurants','airlines','trains'].forEach(t=>{const el=document.getElementById('tab-count-'+t);if(el)el.textContent=(state.recoData[t]?.length||0);});renderRecos();toast(`✨ Found recommendations for ${dest}!`);}
   catch(e){document.getElementById('reco-content').innerHTML=`<div class="card" style="border-color:rgba(239,68,68,0.3)"><div style="color:#ef4444;font-weight:600">⚠️ Failed to load</div><div class="text-sm text-muted mt-3">${e.message}</div></div>`;toast(e.message||'Failed','error');}
   finally{btn.disabled=false;txt.textContent='✨ Search';}
 }
@@ -4346,17 +4342,48 @@ function openBookingModal(type, idx) {
     document.getElementById('form-transport').style.display = '';
     // Update book button label
     document.getElementById('bm-transport-btn').textContent = type === 'trains' ? '🚂 Book Train' : '✈️ Book Ticket';
-    // Reset seat class buttons
-    document.querySelectorAll('.seat-class-btn').forEach((b,i)=>{
-      const active = i===0;
-      b.style.border = active ? '1.5px solid var(--navy)' : '1.5px solid var(--border)';
-      b.style.background = active ? 'var(--navy)' : 'var(--bg)';
-      b.style.color = active ? '#fff' : 'var(--text-muted)';
-    });
-    document.getElementById('bm-seat-class').value = 'economy';
-    document.getElementById('bm-seat-multiplier').value = 1;
-    bookingState.seatMultiplier = 1;
-    bookingState.seatClass = 'economy';
+
+    // Populate seat class grid based on transport type
+    const grid = document.getElementById('seat-class-grid');
+    const isTrainBooking = type === 'trains';
+    const btnBase = 'padding:10px 6px;border-radius:11px;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;';
+    const activeStyle = `border:1.5px solid var(--navy);background:var(--navy);color:#fff;${btnBase}`;
+    const inactiveStyle = `border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);${btnBase}`;
+
+    if (isTrainBooking) {
+      const trainClasses = [
+        {code:'SL',label:'Sleeper (SL)',emoji:'🛏️',mult:0.5},
+        {code:'3A',label:'AC 3 Tier (3A)',emoji:'🚂',mult:1},
+        {code:'2A',label:'AC 2 Tier (2A)',emoji:'💺',mult:1.5},
+        {code:'1A',label:'AC First (1A)',emoji:'⭐',mult:2.2},
+        {code:'CC',label:'Chair Car (CC)',emoji:'🪑',mult:0.8},
+        {code:'EC',label:'Exec Chair (EC)',emoji:'💼',mult:1.8},
+      ];
+      grid.style.gridTemplateColumns = '1fr 1fr 1fr';
+      grid.innerHTML = trainClasses.map((c,i)=>
+        `<button class="seat-class-btn${i===0?' active':''}" onclick="selectSeatClass(this,'${c.code}',${c.mult})" style="${i===0?activeStyle:inactiveStyle}">${c.emoji}<br>${c.label.replace(/ \(/,'<br>(')}<br><span style="font-weight:400;opacity:.7;font-size:10px;">${c.mult}x base</span></button>`
+      ).join('');
+      document.getElementById('bm-seat-class').value = 'SL';
+      document.getElementById('bm-seat-multiplier').value = 0.5;
+      bookingState.seatMultiplier = 0.5;
+      bookingState.seatClass = 'SL';
+    } else {
+      const flightClasses = [
+        {code:'economy',label:'Economy',emoji:'✈️',mult:1},
+        {code:'premium_economy',label:'Prem. Economy',emoji:'🎫',mult:1.5},
+        {code:'business',label:'Business',emoji:'💼',mult:2.2},
+        {code:'first',label:'First Class',emoji:'⭐',mult:3.5},
+      ];
+      grid.style.gridTemplateColumns = '1fr 1fr';
+      grid.innerHTML = flightClasses.map((c,i)=>
+        `<button class="seat-class-btn${i===0?' active':''}" onclick="selectSeatClass(this,'${c.code}',${c.mult})" style="${i===0?activeStyle:inactiveStyle}">${c.emoji}<br>${c.label}<br><span style="font-weight:400;opacity:.7;font-size:10px;">${c.mult}x base</span></button>`
+      ).join('');
+      document.getElementById('bm-seat-class').value = 'economy';
+      document.getElementById('bm-seat-multiplier').value = 1;
+      bookingState.seatMultiplier = 1;
+      bookingState.seatClass = 'economy';
+    }
+
     const today = new Date(); today.setDate(today.getDate()+1);
     document.getElementById('bm-dep-date').value = today.toISOString().split('T')[0];
     document.getElementById('bm-pax').value = 1;
@@ -4498,7 +4525,7 @@ function confirmHotelBooking() {
 function confirmRestaurantBooking() {
   const date = document.getElementById('bm-res-date').value;
   const time = document.getElementById('bm-res-time').value;
-  const pax = bookingState.resPax || 1;
+  const pax = 1;
   if (!date) { toast('Please select a reservation date', 'error'); return; }
   const item = bookingState.item;
   const total = (item.pricePerPerson || 0) * pax;
@@ -4527,7 +4554,11 @@ function confirmTransportBooking() {
   const isTrains = bookingState.type === 'trains';
   const bookingId = genBookingId(isTrains ? 'TRN' : 'FLT');
   const fmtDate = d => new Date(d).toLocaleDateString('en-GB',{day:'numeric',month:'short',year:'numeric'});
-  const clsLabel = {economy:'Economy',business:'Business',sleeper:'Sleeper'}[cls] || cls;
+  const clsLabels = {
+    economy:'Economy',premium_economy:'Premium Economy',business:'Business',first:'First Class',
+    SL:'Sleeper (SL)','3A':'AC 3 Tier (3A)','2A':'AC 2 Tier (2A)','1A':'AC First Class (1A)',CC:'Chair Car (CC)',EC:'Executive Chair Car (EC)'
+  };
+  const clsLabel = clsLabels[cls] || cls;
   showConfirmModal({
     bookingId,
     name: item.name,
@@ -4575,8 +4606,7 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
           </div>
         </div>
         <div style="margin-bottom:14px;">
-          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Number of Guests</label>
-          <input type="number" id="bm-guests" min="1" max="10" value="1" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;" placeholder="1">
+          <input type="hidden" id="bm-guests" value="1">
         </div>
         <div id="hotel-total-box" style="display:none;background:linear-gradient(135deg,rgba(79,142,247,0.08),rgba(16,185,129,0.05));border:1.5px solid rgba(79,142,247,0.2);border-radius:14px;padding:16px 18px;margin-bottom:16px;">
           <div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:8px;">
@@ -4608,17 +4638,7 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
             <input type="time" id="bm-res-time" value="19:00" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
           </div>
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Number of People</label>
-          <div style="display:flex;gap:8px;flex-wrap:wrap;">
-            <button class="pax-pill active" onclick="selectPax(this,1)" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--navy);background:var(--navy);color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">1</button>
-            <button class="pax-pill" onclick="selectPax(this,2)" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">2</button>
-            <button class="pax-pill" onclick="selectPax(this,3)" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">3</button>
-            <button class="pax-pill" onclick="selectPax(this,4)" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">4</button>
-            <button class="pax-pill" onclick="selectPax(this,6)" style="padding:8px 16px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">6+</button>
-          </div>
-          <input type="hidden" id="bm-res-pax" value="1">
-        </div>
+        <input type="hidden" id="bm-res-pax" value="1">
         <div style="background:rgba(247,147,79,0.07);border:1.5px solid rgba(247,147,79,0.2);border-radius:14px;padding:14px 16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;">
           <span style="font-size:13px;color:var(--text-muted);">Estimated bill per person</span>
           <span id="res-per-person" style="font-size:16px;font-weight:700;color:#d97706;"></span>
@@ -4633,15 +4653,12 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
           <input type="date" id="bm-dep-date" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
         </div>
         <div style="margin-bottom:14px;">
-          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:6px;">Number of Passengers</label>
-          <input type="number" id="bm-pax" min="1" max="9" value="1" onchange="calcTransportTotal()" style="width:100%;padding:10px 12px;border-radius:10px;border:1.5px solid var(--border);background:var(--bg);color:var(--text);font-size:13px;outline:none;" onfocus="this.style.borderColor='var(--accent)'" onblur="this.style.borderColor='var(--border)'">
+          <input type="hidden" id="bm-pax" value="1">
         </div>
-        <div style="margin-bottom:16px;">
-          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px;">Seat Class</label>
+        <div style="margin-bottom:16px;" id="seat-class-section">
+          <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:8px;" id="seat-class-label">Seat Class</label>
           <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:8px;" id="seat-class-grid">
-            <button class="seat-class-btn active" onclick="selectSeatClass(this,'economy',1)" style="padding:10px 6px;border-radius:11px;border:1.5px solid var(--navy);background:var(--navy);color:#fff;font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;">✈️<br>Economy<br><span style="font-weight:400;opacity:.7;font-size:10px;">1x base</span></button>
-            <button class="seat-class-btn" onclick="selectSeatClass(this,'business',1.8)" style="padding:10px 6px;border-radius:11px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;">💼<br>Business<br><span style="font-weight:400;opacity:.7;font-size:10px;">1.8x</span></button>
-            <button class="seat-class-btn" onclick="selectSeatClass(this,'sleeper',0.6)" style="padding:10px 6px;border-radius:11px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:11px;font-weight:700;cursor:pointer;text-align:center;transition:all .2s;line-height:1.3;">🛏️<br>Sleeper<br><span style="font-weight:400;opacity:.7;font-size:10px;">0.6x</span></button>
+            <!-- Populated dynamically based on transport type -->
           </div>
           <input type="hidden" id="bm-seat-class" value="economy">
           <input type="hidden" id="bm-seat-multiplier" value="1">
@@ -4746,13 +4763,6 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
       </div>
       <!-- Passengers -->
       <div style="margin-bottom:16px;">
-        <label style="font-size:11px;font-weight:600;color:var(--text-muted);text-transform:uppercase;letter-spacing:.08em;display:block;margin-bottom:7px;">Passengers</label>
-        <div style="display:flex;gap:8px;flex-wrap:wrap;" id="tmb-pax-pills">
-          <button class="tmb-pax-pill" onclick="selectTMPax(this,1)" style="padding:8px 18px;border-radius:20px;border:1.5px solid #059669;background:#059669;color:#fff;font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">1</button>
-          <button class="tmb-pax-pill" onclick="selectTMPax(this,2)" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">2</button>
-          <button class="tmb-pax-pill" onclick="selectTMPax(this,3)" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">3</button>
-          <button class="tmb-pax-pill" onclick="selectTMPax(this,4)" style="padding:8px 18px;border-radius:20px;border:1.5px solid var(--border);background:var(--bg);color:var(--text-muted);font-size:13px;font-weight:600;cursor:pointer;transition:all .2s;">4</button>
-        </div>
         <input type="hidden" id="tmb-pax-val" value="1">
       </div>
       <!-- Fare breakdown -->

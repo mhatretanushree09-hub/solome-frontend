@@ -2,7 +2,7 @@
 <html lang="en">
 <head>
 <meta charset="UTF-8">
-<meta name="viewport" content="width=device-width, initial-scale=0.5">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
 <title>WHERE EVERY SOLO JOURNEY BEGINS</title>
 <link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@400;600;700&family=DM+Sans:wght@300;400;500;600&family=Syne:wght@600;700;800&display=swap" rel="stylesheet">
 <!-- Leaflet removed: using self-contained SVG map renderer -->
@@ -498,10 +498,191 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
 @keyframes toastIn{from{opacity:0;transform:translateX(20px)}to{opacity:1;transform:translateX(0)}}
 .fade-in{animation:fadeUp .4s ease;}
 
-@media(max-width:1000px){.planner-layout{grid-template-columns:1fr;}.nav-links{display:none;}}
-@media(max-width:800px){.wallet-layout{grid-template-columns:1fr;}}
-@media(max-width:750px){.lang-layout{grid-template-columns:1fr;}}
-@media(max-width:600px){.reco-search{grid-template-columns:1fr;}.form-row{grid-template-columns:1fr;}.form-row-3{grid-template-columns:1fr 1fr;}.travel-info-grid{grid-template-columns:1fr 1fr;}}
+/* ═══════════════════════════════════════════════════════════
+   RESPONSIVE — TABLET (≤768px) & MOBILE (≤480px)
+═══════════════════════════════════════════════════════════ */
+
+/* ── Hamburger button (hidden on desktop) ── */
+.nav-hamburger{
+  display:none;flex-direction:column;justify-content:center;align-items:center;
+  gap:5px;width:40px;height:40px;border-radius:10px;border:1px solid var(--border);
+  background:none;cursor:pointer;padding:8px;transition:all .2s;flex-shrink:0;
+}
+.nav-hamburger span{
+  display:block;width:18px;height:2px;background:var(--text);border-radius:2px;
+  transition:all .25s;transform-origin:center;
+}
+.nav-hamburger.open span:nth-child(1){transform:translateY(7px) rotate(45deg);}
+.nav-hamburger.open span:nth-child(2){opacity:0;transform:scaleX(0);}
+.nav-hamburger.open span:nth-child(3){transform:translateY(-7px) rotate(-45deg);}
+
+/* ── Mobile nav drawer ── */
+.nav-drawer{
+  position:fixed;top:60px;left:0;right:0;z-index:99;
+  background:var(--card);border-bottom:1px solid var(--border);
+  box-shadow:0 8px 32px rgba(0,0,0,0.18);
+  display:none;flex-direction:column;gap:4px;padding:12px;
+  animation:drawerSlide .22s ease;
+}
+.dark .nav-drawer{background:rgba(13,30,64,0.98);}
+.nav-drawer.open{display:flex;}
+@keyframes drawerSlide{from{opacity:0;transform:translateY(-10px);}to{opacity:1;transform:translateY(0);}}
+.nav-drawer .nav-link{
+  width:100%;justify-content:flex-start;padding:12px 16px;
+  font-size:clamp(13px,2vw,15px);border-radius:10px;
+}
+
+/* ── TABLET (≤768px) ── */
+@media(max-width:768px){
+  /* Nav */
+  nav{padding:0 16px;}
+  .nav-links{display:none;}
+  .nav-hamburger{display:flex;}
+  .nav-brand{font-size:clamp(14px,4vw,18px);}
+  #user-avatar-name{display:none;}
+
+  /* Pages */
+  .page{padding-top:60px;}
+  .page-header{padding:20px 16px 0;}
+  .page-h1{font-size:clamp(20px,5vw,28px);}
+  .page-sub-text{font-size:clamp(12px,3vw,14px);}
+
+  /* Planner */
+  .planner-layout{grid-template-columns:1fr;gap:16px;padding:20px 16px;}
+  .card{padding:18px;}
+  .card-sm{padding:14px;}
+  .wiz-heading{font-size:clamp(18px,4vw,22px);}
+  .wiz-sub{font-size:clamp(12px,3vw,13px);}
+  .style-pills{grid-template-columns:1fr 1fr;}
+  .form-row{grid-template-columns:1fr;}
+  .form-row-3{grid-template-columns:1fr 1fr;}
+
+  /* City days */
+  .city-days-list{gap:10px;}
+  .city-days-row{flex-direction:column!important;align-items:stretch!important;}
+
+  /* Discover */
+  .reco-layout{padding:20px 16px;}
+  .reco-search{grid-template-columns:1fr;}
+  #reco-category-icons{gap:8px;}
+  #reco-category-icons .reco-cat-btn{min-width:70px;padding:10px 12px!important;}
+
+  /* Wallet */
+  .wallet-layout{grid-template-columns:1fr;}
+  .travel-info-grid{grid-template-columns:1fr 1fr;}
+
+  /* Language */
+  .lang-layout{grid-template-columns:1fr;padding:20px 16px;}
+
+  /* Timeline */
+  .tl-wrap{padding:20px 16px 60px;}
+  .tl-header h1{font-size:clamp(22px,5vw,32px);}
+  .tl-main{grid-template-columns:1fr;}
+  .tl-toolbar{padding:10px 14px;gap:8px;}
+  .tl-add-day-btn{margin-left:0;width:100%;justify-content:center;}
+  .tl-palette{position:static;top:auto;}
+  .tl-days-row{grid-template-columns:1fr;}
+
+  /* Summary bar */
+  .tl-summary{flex-wrap:wrap;gap:10px;}
+
+  /* Toast */
+  #toast{bottom:16px;right:16px;left:16px;}
+  .toast-item{max-width:100%;}
+
+  /* Map modal */
+  .tl-map-box{width:100%;max-height:85vh;border-radius:18px;}
+}
+
+/* ── MOBILE (≤480px) ── */
+@media(max-width:480px){
+  /* Global */
+  body{font-size:clamp(13px,3.5vw,15px);}
+
+  /* Nav */
+  nav{padding:0 12px;height:56px;}
+  .page{padding-top:56px;}
+  .nav-drawer{top:56px;}
+  .nav-logo-icon{width:28px;height:28px;}
+  .nav-brand{font-size:15px;}
+  .dark-toggle{width:32px;height:32px;}
+
+  /* Page headers */
+  .page-header{padding:16px 12px 0;}
+  .page-h1{font-size:clamp(18px,6vw,24px);}
+
+  /* Cards */
+  .card{padding:14px;border-radius:14px;}
+  .card-sm{padding:12px;border-radius:14px;}
+
+  /* Planner */
+  .planner-layout{padding:14px 12px;}
+  .wiz-step-meta{font-size:9px;}
+  .wiz-heading{font-size:18px;}
+  input[type=text],input[type=number],input[type=date],select,textarea{
+    font-size:16px; /* prevents iOS zoom */
+    padding:10px 12px;
+    min-height:44px;
+  }
+  .btn{min-height:44px;font-size:14px;}
+  .wiz-back{min-height:44px;}
+
+  /* City days — touch-friendly steppers */
+  .city-days-row{border-radius:12px!important;}
+
+  /* Pills */
+  .pill{padding:8px 14px;font-size:12px;min-height:36px;display:flex;align-items:center;}
+  .style-pills{grid-template-columns:1fr 1fr;gap:8px;}
+  .pills-wrap{gap:6px;}
+
+  /* Discover */
+  .reco-layout{padding:14px 12px;}
+  #reco-category-icons{gap:6px;}
+  #reco-category-icons .reco-cat-btn{
+    min-width:0!important;flex:1;
+    padding:10px 6px!important;
+    font-size:10px!important;
+  }
+  #reco-category-icons .reco-cat-btn span:first-child{font-size:22px!important;}
+  .reco-grid{grid-template-columns:1fr;}
+  .reco-card{padding:14px;}
+  .tab-row{flex-wrap:wrap;gap:6px;}
+  .tab{font-size:12px;padding:6px 12px;}
+
+  /* Timeline */
+  .tl-wrap{padding:14px 12px 60px;}
+  .tl-header h1{font-size:20px;}
+  .tl-header p{font-size:12px;}
+  .tl-toolbar{padding:10px 12px;}
+  .tl-add-day-btn{padding:10px 14px;font-size:13px;min-height:44px;}
+  .tl-day-action-btn{width:32px;height:32px;}
+  .tl-chip{padding:10px;}
+  .tl-pal-item{padding:10px;}
+  .tl-custom-row{grid-template-columns:1fr;}
+
+  /* Wallet */
+  .wallet-layout{padding:14px 12px;}
+  .travel-info-grid{grid-template-columns:1fr;}
+
+  /* Language */
+  .lang-layout{padding:14px 12px;}
+  .lang-switcher{flex-direction:column;align-items:flex-start;}
+
+  /* TravelMe */
+  .transport-grid{grid-template-columns:repeat(2,1fr);}
+
+  /* Map modal */
+  .tl-map-box{border-radius:14px 14px 0 0;max-height:92vh;}
+  #tl-map-modal{align-items:flex-end;padding:0;}
+
+  /* Toast */
+  #toast{bottom:12px;right:12px;left:12px;}
+
+  /* Typography */
+  .card-title{font-size:clamp(15px,4vw,18px);}
+  .card-sub{font-size:11px;}
+  label{font-size:11px;}
+}
 
 /* ═══════════════════════════════════════════
    TRIP TIMELINE — DRAG & DROP PLANNER
@@ -1062,6 +1243,10 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
     <button class="nav-link" id="nav-travelme" onclick="showPage('travelme')">🛺 TravelMe</button>
     <button class="nav-link" id="nav-timeline" onclick="showPage('timeline')">🗓️ Timeline</button>
   </div>
+  <!-- Hamburger (mobile only) -->
+  <button class="nav-hamburger" id="nav-hamburger" onclick="toggleNavDrawer()" aria-label="Menu">
+    <span></span><span></span><span></span>
+  </button>
   <div class="nav-right">
     <div id="trip-badge" class="trip-badge hidden" onclick="showPage('planner')">
       <span class="trip-dot"></span>
@@ -1093,6 +1278,16 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
     </div>
   </div>
 </nav>
+
+<!-- Mobile nav drawer -->
+<div class="nav-drawer" id="nav-drawer">
+  <button class="nav-link" onclick="showPage('planner');closeNavDrawer()">✈️ Planner</button>
+  <button class="nav-link" onclick="showPage('wallet');closeNavDrawer()">💰 Wallet</button>
+  <button class="nav-link" onclick="showPage('recommendations');closeNavDrawer()">⭐ Discover</button>
+  <button class="nav-link" onclick="showPage('language');closeNavDrawer()">🌐 Translate</button>
+  <button class="nav-link" onclick="showPage('travelme');closeNavDrawer()">🛺 TravelMe</button>
+  <button class="nav-link" onclick="showPage('timeline');closeNavDrawer()">🗓️ Timeline</button>
+</div>
 
 <div id="toast"></div>
 
@@ -1151,10 +1346,9 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
 
           <div class="form-group"><label>Trip Start Date</label><div class="input-icon-wrap"><span class="input-prefix-icon">📅</span><input type="date" id="f-travel-date" style="padding-left:36px"></div></div>
 
-          <div class="form-row form-group">
-            <div><label>Total Budget <span class="info-tip" data-tip="Budget covers accommodation, food and activities in your destination cities. Transport between cities is estimated separately on top.">i</span></label><input type="number" id="f-budget" value="15000" min="50"></div>
-            <div><label>Currency</label><select id="f-currency"><option value="USD">USD — $</option><option value="EUR">EUR — €</option><option value="GBP">GBP — £</option><option value="INR" selected>INR — ₹</option><option value="JPY">JPY — ¥</option><option value="AUD">AUD — A$</option><option value="SGD">SGD — S$</option><option value="THB">THB — ฿</option></select></div>
-          </div>
+          <!-- Budget & Currency kept hidden for JS logic -->
+          <input type="number" id="f-budget" value="15000" min="50" style="display:none">
+          <select id="f-currency" style="display:none"><option value="USD">USD — $</option><option value="EUR">EUR — €</option><option value="GBP">GBP — £</option><option value="INR" selected>INR — ₹</option><option value="JPY">JPY — ¥</option><option value="AUD">AUD — A$</option><option value="SGD">SGD — S$</option><option value="THB">THB — ฿</option></select>
 
           <div class="form-group">
             <label>Days per City</label>
@@ -1343,7 +1537,24 @@ input[type=range]{flex:1;accent-color:var(--navy);cursor:pointer;}
   <div class="page-header"><h1 class="page-h1">Discover</h1><p class="page-sub-text">AI-curated picks for your destination and budget</p></div>
   <div class="reco-layout">
     <div class="card mb-4">
-      <div class="reco-search"><div><label>Destination</label><input type="text" id="reco-dest" placeholder="e.g. Bangkok, Thailand"></div><div><label>Budget</label><input type="number" id="reco-budget" value="1500"></div><div><label>&nbsp;</label><button class="btn btn-navy" id="reco-btn" onclick="fetchRecos()" style="width:100%"><span id="reco-btn-txt">✨ Search</span></button></div></div>
+      <div class="reco-search" style="grid-template-columns:1fr auto;"><div><label>Destination</label><input type="text" id="reco-dest" placeholder="e.g. Bangkok, Thailand" onkeydown="if(event.key==='Enter')fetchRecoCategory()"></div><div><label>&nbsp;</label><button class="btn btn-navy" id="reco-btn" onclick="fetchRecoCategory()" style="width:100%"><span id="reco-btn-txt">🔍 Search</span></button></div></div>
+      <!-- hidden budget kept for any legacy code -->
+      <input type="number" id="reco-budget" value="1500" style="display:none">
+      <!-- Category icon selectors -->
+      <div id="reco-category-icons" style="display:flex;gap:12px;margin-top:14px;flex-wrap:wrap;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none;">
+        <button class="reco-cat-btn active" data-cat="hotels" onclick="recoSelectCat(this,'hotels')" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 18px;border-radius:14px;border:2px solid var(--accent);background:rgba(79,142,247,0.1);color:var(--text);cursor:pointer;transition:all .2s;font-family:var(--font-body);flex:1;min-width:70px;">
+          <span style="font-size:26px;">🏨</span><span style="font-size:11px;font-weight:700;letter-spacing:.04em;">Hotels</span>
+        </button>
+        <button class="reco-cat-btn" data-cat="restaurants" onclick="recoSelectCat(this,'restaurants')" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 18px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:all .2s;font-family:var(--font-body);flex:1;min-width:70px;">
+          <span style="font-size:26px;">🍽️</span><span style="font-size:11px;font-weight:700;letter-spacing:.04em;">Restaurants</span>
+        </button>
+        <button class="reco-cat-btn" data-cat="airlines" onclick="recoSelectCat(this,'airlines')" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 18px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:all .2s;font-family:var(--font-body);flex:1;min-width:70px;">
+          <span style="font-size:26px;">✈️</span><span style="font-size:11px;font-weight:700;letter-spacing:.04em;">Airlines</span>
+        </button>
+        <button class="reco-cat-btn" data-cat="trains" onclick="recoSelectCat(this,'trains')" style="display:flex;flex-direction:column;align-items:center;gap:5px;padding:12px 18px;border-radius:14px;border:2px solid var(--border);background:transparent;color:var(--text);cursor:pointer;transition:all .2s;font-family:var(--font-body);flex:1;min-width:70px;">
+          <span style="font-size:26px;">🚂</span><span style="font-size:11px;font-weight:700;letter-spacing:.04em;">Trains</span>
+        </button>
+      </div>
     </div>
     <div class="tab-row" id="reco-tabs" style="display:none">
       <button class="tab active" data-tab="hotels" onclick="switchTab(this,'hotels')">🏨 Hotels <span id="tab-count-hotels" class="reco-tag" style="margin-left:4px">0</span></button>
@@ -2767,51 +2978,76 @@ window.renderCityDays = function(){
   var currency = (document.getElementById('f-currency') ? document.getElementById('f-currency').value : state.currency) || 'INR';
   var currSymbols = {USD:'$',EUR:'€',GBP:'£',INR:'₹',JPY:'¥',AUD:'A$',SGD:'S$',THB:'฿'};
   var sym = currSymbols[currency] || currency;
-  var totalBudgetEl = document.getElementById('f-budget');
-  var totalBudget = totalBudgetEl ? parseFloat(totalBudgetEl.value)||0 : 0;
+
+  // ── Button style helpers ──
+  var dayBtn  = 'width:30px;height:30px;border-radius:8px;border:1.5px solid var(--accent);background:transparent;color:var(--accent);font-weight:800;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;line-height:1;font-family:var(--font-body);';
+  var nightBtn = 'width:30px;height:30px;border-radius:8px;border:1.5px solid var(--accent-warm);background:transparent;color:var(--accent-warm);font-weight:800;font-size:16px;cursor:pointer;display:inline-flex;align-items:center;justify-content:center;transition:all .15s;line-height:1;font-family:var(--font-body);';
+  var valStyle = 'min-width:60px;text-align:center;font-weight:700;font-size:13px;';
 
   el.innerHTML = dests.map(function(s, i){
-    if (!s.days) s.days = 3;
-    if (!s.budget) s.budget = Math.round(totalBudget / dests.length);
-    var nights = s.days; // nights = days (check-in day 1, check-out last day)
+    if (!s.days)   s.days   = 3;
+    if (!s.nights) s.nights = s.days;
+    if (!s.budget) s.budget = 5000;
     var realIdx = i + 1;
-    return '<div class="city-days-row" style="flex-direction:column;align-items:stretch;gap:10px;padding:12px 14px;">'
-      // City name
-      + '<div style="display:flex;align-items:center;gap:8px;">'
-      +   '<span style="font-size:15px;">📍</span>'
-      +   '<span class="city-days-name">' + (s.city||'Stop ' + (i+1)) + '</span>'
+    return (
+      // Card
+      '<div class="city-days-row" style="flex-direction:column;align-items:stretch;gap:0;padding:0;border-radius:13px;overflow:hidden;">'
+
+        // ── City name header ──
+        + '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px 8px;">'
+        +   '<span style="font-size:16px;">📍</span>'
+        +   '<span style="font-weight:700;font-size:13px;color:var(--text);">' + (s.city||'Stop '+(i+1)) + '</span>'
+        + '</div>'
+
+        // ── Divider ──
+        + '<div style="height:1px;background:var(--border);margin:0 14px;"></div>'
+
+        // ── Days + Nights row ──
+        + '<div style="display:grid;grid-template-columns:1fr 1fr;gap:0;padding:10px 14px;">'
+
+          // Days
+          + '<div style="display:flex;flex-direction:column;gap:6px;padding-right:12px;border-right:1px solid var(--border);">'
+          +   '<span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);">🌅 Days</span>'
+          +   '<div style="display:flex;align-items:center;gap:6px;">'
+          +     '<button style="' + dayBtn + '" onclick="cityDaysAdj('+realIdx+',-1)">−</button>'
+          +     '<span id="cdv-'+realIdx+'" style="'+valStyle+'color:var(--accent);">' + s.days + (s.days>1?' days':' day') + '</span>'
+          +     '<button style="' + dayBtn + '" onclick="cityDaysAdj('+realIdx+',1)">+</button>'
+          +   '</div>'
+          + '</div>'
+
+          // Nights
+          + '<div style="display:flex;flex-direction:column;gap:6px;padding-left:12px;">'
+          +   '<span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);">🌙 Nights</span>'
+          +   '<div style="display:flex;align-items:center;gap:6px;">'
+          +     '<button style="' + nightBtn + '" onclick="cityNightsAdj('+realIdx+',-1)">−</button>'
+          +     '<span id="cdn-'+realIdx+'" style="'+valStyle+'color:var(--accent-warm);">' + s.nights + (s.nights>1?' nights':' night') + '</span>'
+          +     '<button style="' + nightBtn + '" onclick="cityNightsAdj('+realIdx+',1)">+</button>'
+          +   '</div>'
+          + '</div>'
+
+        + '</div>'
+
+        // ── Divider ──
+        + '<div style="height:1px;background:var(--border);margin:0 14px;"></div>'
+
+        // ── Budget row ──
+        + '<div style="display:flex;align-items:center;gap:8px;padding:10px 14px;">'
+        +   '<span style="font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;color:var(--text-faint);min-width:52px;">💰 Budget</span>'
+        +   '<div style="display:flex;align-items:center;gap:4px;flex:1;">'
+        +     '<span style="font-size:13px;font-weight:600;color:var(--text-muted);">' + sym + '</span>'
+        +     '<input type="number" id="cdb-'+realIdx+'" value="'+s.budget+'" min="0" oninput="cityBudgetUpdate('+realIdx+',this.value)"'
+        +       ' style="flex:1;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:13px;font-weight:600;outline:none;width:0;">'
+        +   '</div>'
+        +   '<span id="cdpd-'+realIdx+'" style="font-size:10px;color:var(--text-faint);white-space:nowrap;">' + sym + Math.round(s.budget/(s.days||1)) + '/day</span>'
+        + '</div>'
+
       + '</div>'
-      // Days/nights stepper row
-      + '<div style="display:flex;align-items:center;gap:10px;">'
-      +   '<div style="display:flex;align-items:center;gap:6px;flex:1;">'
-      +     '<span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);min-width:52px;">🌅 Days</span>'
-      +     '<div class="city-days-stepper">'
-      +       '<button class="city-days-btn" onclick="cityDaysAdj(' + realIdx + ',-1)" title="One less day">−</button>'
-      +       '<span class="city-days-val" id="cdv-' + realIdx + '">' + s.days + ' day' + (s.days>1?'s':'') + '</span>'
-      +       '<button class="city-days-btn" onclick="cityDaysAdj(' + realIdx + ',1)" title="One more day">+</button>'
-      +     '</div>'
-      +   '</div>'
-      +   '<div style="display:flex;align-items:center;gap:6px;flex:1;">'
-      +     '<span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);min-width:54px;">🌙 Nights</span>'
-      +     '<span id="cdn-' + realIdx + '" style="min-width:56px;text-align:center;font-weight:700;font-size:13px;color:var(--accent-warm);">' + nights + ' night' + (nights>1?'s':'') + '</span>'
-      +   '</div>'
-      + '</div>'
-      // Budget row
-      + '<div style="display:flex;align-items:center;gap:8px;">'
-      +   '<span style="font-size:11px;font-weight:700;letter-spacing:.06em;text-transform:uppercase;color:var(--text-faint);min-width:52px;">💰 Budget</span>'
-      +   '<div style="display:flex;align-items:center;gap:4px;flex:1;">'
-      +     '<span style="font-size:13px;font-weight:600;color:var(--text-muted);">' + sym + '</span>'
-      +     '<input type="number" id="cdb-' + realIdx + '" value="' + s.budget + '" min="0" oninput="cityBudgetUpdate(' + realIdx + ', this.value)"'
-      +       ' style="flex:1;padding:5px 8px;border-radius:8px;border:1px solid var(--border);background:var(--bg);color:var(--text);font-family:var(--font-body);font-size:13px;font-weight:600;outline:none;width:0;">'
-      +   '</div>'
-      +   '<span id="cdpd-' + realIdx + '" style="font-size:10px;color:var(--text-faint);white-space:nowrap;">' + sym + Math.round(s.budget / (s.days||1)) + '/day</span>'
-      + '</div>'
-      + '</div>';
+    );
   }).join('')
-  // Total budget from cities
+  // ── Total budget row ──
   + '<div id="city-budget-total-row" style="margin-top:8px;padding:10px 14px;border-radius:11px;background:rgba(79,142,247,0.07);border:1px solid rgba(79,142,247,0.2);display:flex;align-items:center;justify-content:space-between;">'
   +   '<span style="font-size:12px;font-weight:700;color:var(--text-muted);">City budgets total</span>'
-  +   '<span id="city-budget-total-val" style="font-size:14px;font-weight:800;color:var(--accent);">' + sym + dests.reduce(function(t,s){ return t + (s.budget||0); }, 0).toLocaleString() + '</span>'
+  +   '<span id="city-budget-total-val" style="font-size:14px;font-weight:800;color:var(--accent);">' + sym + dests.reduce(function(t,s){ return t+(s.budget||0); },0).toLocaleString() + '</span>'
   + '</div>';
 };
 
@@ -2819,10 +3055,8 @@ window.cityDaysAdj = function(idx, delta){
   var s = state.segments[idx]; if (!s) return;
   s.days = Math.max(1, Math.min(14, (s.days||3) + delta));
   var v = document.getElementById('cdv-' + idx);
-  if (v) v.textContent = s.days + ' day' + (s.days>1?'s':'');
-  var n = document.getElementById('cdn-' + idx);
-  if (n) n.textContent = s.days + ' night' + (s.days>1?'s':'');
-  // Update per-day cost
+  if (v) v.textContent = s.days + (s.days>1?' days':' day');
+  // refresh per-day cost
   var budgetEl = document.getElementById('cdb-' + idx);
   var budget = budgetEl ? parseFloat(budgetEl.value)||0 : (s.budget||0);
   var pdEl = document.getElementById('cdpd-' + idx);
@@ -2832,21 +3066,28 @@ window.cityDaysAdj = function(idx, delta){
   if (pdEl) pdEl.textContent = sym + Math.round(budget / s.days) + '/day';
 };
 
+window.cityNightsAdj = function(idx, delta){
+  var s = state.segments[idx]; if (!s) return;
+  if (s.nights === undefined) s.nights = s.days || 3;
+  s.nights = Math.max(0, Math.min(14, s.nights + delta));
+  var n = document.getElementById('cdn-' + idx);
+  if (n) n.textContent = s.nights + (s.nights>1?' nights':' night');
+};
+
 window.cityBudgetUpdate = function(idx, val){
   var s = state.segments[idx]; if (!s) return;
   s.budget = parseFloat(val)||0;
-  // Update per-day cost label
   var pdEl = document.getElementById('cdpd-' + idx);
   var currency = (document.getElementById('f-currency') ? document.getElementById('f-currency').value : state.currency) || 'INR';
   var currSymbols = {USD:'$',EUR:'€',GBP:'£',INR:'₹',JPY:'¥',AUD:'A$',SGD:'S$',THB:'฿'};
   var sym = currSymbols[currency] || currency;
   if (pdEl) pdEl.textContent = sym + Math.round(s.budget / ((s.days)||1)) + '/day';
-  // Update total row
+  // update total
   var dests = (state.segments||[]).slice(1);
   var total = dests.reduce(function(t,sg){ return t + (sg.budget||0); }, 0);
   var tv = document.getElementById('city-budget-total-val');
   if (tv) tv.textContent = sym + total.toLocaleString();
-  // Also update the main budget field to match sum
+  // sync hidden main budget
   var mainBudget = document.getElementById('f-budget');
   if (mainBudget) mainBudget.value = total;
 };
@@ -2860,10 +3101,11 @@ window.renderWizSummary = function(){
   var style = state.travelStyle || 'balanced';
   var ints = [].slice.call(document.querySelectorAll('[data-val].active')).map(function(e){return e.dataset.val;});
   var totalDays = segs.slice(1).reduce(function(t,s){ return t + (s.days||3); }, 0);
+  var totalNights = segs.slice(1).reduce(function(t,s){ return t + (s.nights !== undefined ? s.nights : (s.days||3)); }, 0);
   var routeChips = segs.map(function(s, i){
     var name = s.city || '—';
     var chip = '<span class="summary-chip">' + (i===0?'🏠 ':'📍 ') + name
-      + (i>0 ? ' · ' + (s.days||3) + 'd/' + (s.days||3) + 'n' : '')
+      + (i>0 ? ' · ' + (s.days||3) + 'd/' + (s.nights||s.days||3) + 'n' : '')
       + '</span>';
     return chip + (i < segs.length-1 ? '<span class="summary-arrow">→ ' + (TRANSPORT_MODES.find(function(t){return t.mode===s.transport;})||{emoji:'🚂'}).emoji + ' →</span>' : '');
   }).join('');
@@ -2876,7 +3118,7 @@ window.renderWizSummary = function(){
   }).join(' ');
   var totalBudget = destSegs.reduce(function(t,s){ return t + (s.budget||0); }, 0) || budget;
   el.innerHTML = ''
-    + '<div class="summary-card"><div class="summary-label">Route · ' + totalDays + ' days / ' + totalDays + ' nights total</div><div class="summary-value summary-route">' + routeChips + '</div></div>'
+    + '<div class="summary-card"><div class="summary-label">Route · ' + totalDays + ' days / ' + totalNights + ' nights total</div><div class="summary-value summary-route">' + routeChips + '</div></div>'
     + '<div class="summary-card"><div class="summary-label">When</div><div class="summary-value">' + date + '</div></div>'
     + '<div class="summary-card"><div class="summary-label">Budget per City</div><div class="summary-value summary-route">' + cityBudgetChips + '</div></div>'
     + '<div class="summary-card"><div class="summary-label">Total Budget</div><div class="summary-value">' + sym + totalBudget.toLocaleString() + ' ' + currency + ' <span style="font-weight:400;color:var(--text-muted);font-size:12px;">· covers stays, food &amp; activities. Inter-city transport is estimated separately.</span></div></div>'
@@ -3773,6 +4015,50 @@ function updateWalletUI(){
 async function fetchBudgetTips(){const spent=state.expenses.reduce((s,e)=>s+e.amount,0);const tipsEl=document.getElementById('budget-tips');tipsEl.innerHTML='<div class="loading-banner"><div class="spinner"></div><span>Getting AI tips…</span></div>';try{const raw=await callGemini(`Give 4 practical money-saving tips for a solo traveller. Budget: ${fmtCurrency(state.totalBudget,state.currency)}. Spent: ${fmtCurrency(spent,state.currency)}. Destination: ${state.plan?.destination||'unknown'}.\nReturn ONLY valid JSON: {"tips":["tip1","tip2","tip3","tip4"]}`);const data=parseJSON(raw);tipsEl.innerHTML=(data.tips||[]).map(t=>`<div style="display:flex;gap:8px;margin-bottom:10px;font-size:13px;color:var(--text-muted)"><span style="color:var(--accent)">💡</span>${t}</div>`).join('');}catch(e){tipsEl.innerHTML=`<div class="text-xs text-muted">Could not load tips: ${e.message}</div><button class="btn btn-outline btn-sm btn-full mt-3" onclick="fetchBudgetTips()">Retry</button>`;}}
 
 // ─ Recommendations ─
+window.recoSelectCat = function(btn, cat){
+  document.querySelectorAll('.reco-cat-btn').forEach(function(b){
+    b.style.borderColor = 'var(--border)';
+    b.style.background = 'transparent';
+  });
+  btn.style.borderColor = 'var(--accent)';
+  btn.style.background = 'rgba(79,142,247,0.1)';
+  state.activeRecoTab = cat;
+};
+
+window.fetchRecoCategory = async function(){
+  const dest = document.getElementById('reco-dest').value.trim();
+  const cat = state.activeRecoTab || 'hotels';
+  const cur = state.currency;
+  if(!dest){ if(typeof toast==='function') toast('Please enter a destination','error'); return; }
+  const btn=document.getElementById('reco-btn'),txt=document.getElementById('reco-btn-txt');
+  btn.disabled=true; txt.innerHTML='<span style="display:inline-block;width:13px;height:13px;border:2px solid rgba(255,255,255,0.3);border-top-color:#fff;border-radius:50%;animation:spin .7s linear infinite;"></span> Searching…';
+  document.getElementById('reco-tabs').style.display='none';
+  document.getElementById('reco-content').innerHTML='<div class="loading-banner"><div class="spinner"></div><span>Finding '+cat+' in '+dest+'…</span></div>';
+  try{
+    var catPrompts = {
+      hotels: 'hotels and accommodation',
+      restaurants: 'restaurants and dining',
+      airlines: 'airlines and flight options',
+      trains: 'train and rail options'
+    };
+    const raw=await callGemini('You are a travel recommendation engine. Give '+catPrompts[cat]+' recommendations for '+dest+'. Return ONLY valid JSON with NO extra text, no markdown:\n{"'+cat+'":[{"name":"","description":"","'+( cat==='hotels'?'pricePerNight':cat==='restaurants'?'pricePerPerson':'price' )+'":'+'number,"rating":number,"tags":["tag1"],"tip":""}]}\nInclude 5-6 items. Prices must be realistic in '+cur+'.');
+    var parsed = parseJSON(raw);
+    if (!state.recoData) state.recoData = {};
+    state.recoData[cat] = parsed[cat] || [];
+    state.activeRecoTab = cat;
+    document.getElementById('reco-tabs').style.display='flex';
+    ['hotels','restaurants','airlines','trains'].forEach(function(t){
+      var el=document.getElementById('tab-count-'+t);
+      if(el) el.textContent = t===cat ? (state.recoData[cat]||[]).length : (state.recoData[t]||[]).length;
+    });
+    // Activate the right tab
+    document.querySelectorAll('.tab').forEach(function(t){ t.classList.remove('active'); if(t.dataset.tab===cat) t.classList.add('active'); });
+    renderRecos();
+    if(typeof toast==='function') toast('✨ Found '+cat+' in '+dest+'!');
+  }catch(e){ document.getElementById('reco-content').innerHTML='<div class="empty-state"><div class="empty-icon">⚠️</div><div class="empty-title">Search failed</div><div class="empty-desc">'+e.message+'</div></div>'; }
+  btn.disabled=false; txt.textContent='🔍 Search';
+};
+
 async function fetchRecos(){
   const dest=document.getElementById('reco-dest').value.trim(),budget=parseFloat(document.getElementById('reco-budget').value)||1500,cur=state.currency;
   if(!dest){toast('Enter a destination','error');return;}
@@ -4517,13 +4803,8 @@ function toast(msg,type='success'){const el=document.createElement('div');el.cla
 
     <!-- Destination + controls toolbar -->
     <div class="tl-toolbar">
-      <div class="tl-dest-input-wrap">
-        <span class="tl-dest-input-icon">✈️</span>
-        <input class="tl-dest-input" id="tl-destination" type="text"
-          placeholder="Enter your destination (e.g. Bali, Paris, Goa…)"
-          oninput="tlUpdateDestination(this.value)"
-          onkeydown="if(event.key==='Enter')this.blur()">
-      </div>
+      <!-- destination input hidden but kept for JS that may read it -->
+      <input id="tl-destination" type="text" style="display:none" oninput="tlUpdateDestination(this.value)">
       <div id="tl-dest-tagline" class="tl-dest-tagline" style="display:none;"></div>
       <button class="tl-add-day-btn" onclick="tlAddDay()">＋ Add Day</button>
     </div>
@@ -5380,5 +5661,28 @@ document.addEventListener('keydown', function(e){
   </div>
 </div>
 
+<script>
+/* ── Mobile nav drawer ── */
+function toggleNavDrawer(){
+  var btn = document.getElementById('nav-hamburger');
+  var drawer = document.getElementById('nav-drawer');
+  var isOpen = drawer.classList.contains('open');
+  if(isOpen){ closeNavDrawer(); }
+  else { drawer.classList.add('open'); btn.classList.add('open'); }
+}
+function closeNavDrawer(){
+  document.getElementById('nav-drawer').classList.remove('open');
+  document.getElementById('nav-hamburger').classList.remove('open');
+}
+// Close drawer when tapping outside
+document.addEventListener('click', function(e){
+  var drawer = document.getElementById('nav-drawer');
+  var btn = document.getElementById('nav-hamburger');
+  if(drawer && drawer.classList.contains('open') && !drawer.contains(e.target) && !btn.contains(e.target)){
+    closeNavDrawer();
+  }
+});
+// Drawer closes automatically via onclick handlers on each drawer button
+</script>
 </body>
 </html>

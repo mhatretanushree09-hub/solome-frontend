@@ -419,29 +419,17 @@
     }
 
     // ── Geocode a city name (search index first, then Nominatim API) ──
-   // ── Geocode a city name (search index first, then Nominatim API) ──
     async function geocodeCity(name) {
       if (!name) return null;
       const q = name.trim().toLowerCase();
-      const cleanQ = q.split(',')[0].trim();
-
-      // 1. First Pass: Look for an exact name match across the ENTIRE database
-      // If multiple exist (like Goa India vs Goa Philippines), prioritize India
-      const exactMatches = searchIndex.filter(c => c.name.toLowerCase() === cleanQ);
-      if (exactMatches.length > 0) {
-        const indiaMatch = exactMatches.find(c => c.country.toLowerCase() === 'india');
-        return indiaMatch || exactMatches[0];
-      }
-
-      // 2. Second Pass: Look for an exact match with full string (e.g. "Mumbai, India")
-      const fullMatch = searchIndex.find(c => (c.name.toLowerCase() + ', ' + c.country.toLowerCase()) === q);
-      if (fullMatch) return fullMatch;
-
-      // 3. Third Pass: Only do a loose .includes() if no exact match was found anywhere
-      const looseMatch = searchIndex.find(c => c.name.toLowerCase().includes(cleanQ));
-      if (looseMatch) return looseMatch;
-
-      // Fallback to Nominatim API if nothing is found locally
+      // Try local index first
+      const local = searchIndex.find(c =>
+        c.name.toLowerCase() === q ||
+        (c.name.toLowerCase() + ', ' + c.country.toLowerCase()) === q ||
+        c.name.toLowerCase().includes(q.split(',')[0].trim())
+      );
+      if (local) return local;
+      // Fallback to Nominatim
       try {
         const resp = await fetch(`https://nominatim.openstreetmap.org/search?format=json&q=${encodeURIComponent(name)}&limit=1`);
         const data = await resp.json();
@@ -449,7 +437,6 @@
       } catch(_) {}
       return null;
     }
-
 
     // ── Road route via OSRM ──
     async function drawRoadRoute(src, dst, label) {

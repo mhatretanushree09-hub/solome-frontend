@@ -2606,7 +2606,6 @@ const state={
   selectedLang:{code:'es',name:'Spanish'},travelStyle:'balanced',interests:[],
   isGenerating:false,transportMode:'train',mapInstance:null
 };
-let GEMINI_KEY='AIzaSyArQkb-d3U6k-TtgAXTpK-oqnQTu8PsArk';
 const CAT_COLORS={food:'#f7934f',transport:'#4f8ef7',accommodation:'#a78bfa',activity:'#34d399',shopping:'#f472b6',other:'#94a3b8'};
 const CAT_EMOJI={food:'🍽️',transport:'🚌',accommodation:'🏨',activity:'🎭',shopping:'🛍️',other:'💼'};
 const TRANSPORT_EMOJI={train:'🚂',airways:'✈️',bus:'🚌',ship:'🚢',bike:'🏍️',cab:'🚕',auto:'🛺'};
@@ -2703,9 +2702,11 @@ function setTransport(el){document.querySelectorAll('.transport-btn').forEach(b=
 // Use '' to call a same-origin endpoint if frontend + backend share a host.
 const AI_BACKEND = 'https://solome-backend.vercel.app';
 async function callGemini(prompt, isJson){
-  // No API key here anymore — the backend injects it from an env var.
   const r=await fetch(`${AI_BACKEND}/api/ai`,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify({prompt,isJson:!!isJson})});
-  if(!r.ok){const e=await r.json().catch(()=>({}));throw new Error(e?.error||'API error '+r.status);}
+  if(!r.ok){
+    const e=await r.json().catch(()=>({}));
+    throw new Error(e?.error||'API error '+r.status);
+  }
   const d=await r.json();
   const txt=d?.text;
   if(!txt)throw new Error('Empty API response');
